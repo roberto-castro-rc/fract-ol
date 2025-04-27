@@ -11,7 +11,7 @@ MLX = $(MLX_DIR)/build/libmlx42.a
 
 MLX_FLAGS = -lX11 -lXext -lm -ldl -lglfw
 
-SRC = main.c
+SRC = main.c window.c julia.c mandelbrot.c
 
 OBJ = $(SRC:.c=.o)
 
