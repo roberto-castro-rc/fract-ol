@@ -43,4 +43,3 @@ int	veriction_args(int argc, char **argv)
 	printf("Error: Invalid argument\n");
 	return (0);
 }
-//

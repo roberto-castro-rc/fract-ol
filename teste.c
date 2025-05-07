@@ -1,14 +1,18 @@
-#include "fractol.h"
-#include "libs/MLX42/include/MLX42/MLX42.h"
+// -----------------------------------------------------------------------------
+// Codam Coding College, Amsterdam @ 2022-2023 by W2Wizard.
+// See README in the root project for more information.
+// -----------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "libs/MLX42/include/MLX42/MLX42.h"
+
 
 #define WIDTH 512
-#define HEIGHT 512
+#define HEIGHT 700
 
 static mlx_image_t* image;
-
 
 // -----------------------------------------------------------------------------
 
@@ -35,22 +39,6 @@ void ft_randomize(void* param)
 	}
 }
 
-void draw_checker(void *param)
-{
-	(void)param;
-	for (uint32_t x = 0; x < image->width; x++)
-	{
-		for (uint32_t y = 0; y < image->height; y++)
-		{
-			int is_white = ((x / 10 + y / 10) % 2 == 0);
-			uint32_t color = is_white ? ft_pixel(255, 255, 255, 255)
-			                          : ft_pixel(0, 0, 0, 255);
-			mlx_put_pixel(image, x, y, color);
-		}
-	}
-}
-
-
 void ft_hook(void* param)
 {
 	mlx_t* mlx = param;
@@ -69,39 +57,35 @@ void ft_hook(void* param)
 
 // -----------------------------------------------------------------------------
 
-int window(void)
+
+
+int32_t main(void)
 {
 	mlx_t* mlx;
 
-	mlx = mlx_init(WIDTH, HEIGHT, "MLX42", false);
-
-	if (!mlx)
+	// Gotta error check this stuff
+	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
 	{
 		puts(mlx_strerror(mlx_errno));
-		return(1);
+		return(EXIT_FAILURE);
 	}
-	image = mlx_new_image(mlx, 125, 128);
-	printf("passou aqui?\n");
-	if (!image)
+	if (!(image = mlx_new_image(mlx, 128, 128)))
 	{
 		mlx_close_window(mlx);
 		puts(mlx_strerror(mlx_errno));
-		return(1);
+		return(EXIT_FAILURE);
 	}
-	printf("passou aqui 2?\n");
 	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
 	{
 		mlx_close_window(mlx);
 		puts(mlx_strerror(mlx_errno));
-		return(1);
+		return(EXIT_FAILURE);
 	}
 
-	mlx_loop_hook(mlx, draw_checker, mlx);
 	mlx_loop_hook(mlx, ft_randomize, mlx);
 	mlx_loop_hook(mlx, ft_hook, mlx);
-	printf("passou aqui 3?\n");
+
 	mlx_loop(mlx);
-	printf("passou aqui 4?\n");
 	mlx_terminate(mlx);
-	return (1);
+	return (EXIT_SUCCESS);
 }

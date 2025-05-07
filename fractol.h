@@ -8,6 +8,17 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define MAX_INTER 50
+
+
+typedef struct s_complex
+{
+    double real;
+    double imag;
+} t_complex;
+
+
+
 
 int	window(void);
 void	julia(void);
