@@ -1,0 +1,1567 @@
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+</br>
+<div align="center">
+  <img src="./assets/logo.png" alt="42MLX_Logo">
+</div>
+<div align="center" style="margin-top: 8px;">
+  <sub>Written by <a href="https://portfolio.w2wizard.dev/">W2.Wizard</a> for the 42 Network</sub>
+</div>
+</br>
+
+<div align="center">
+    <h1>Welcome to the MLX42 documentation</h1>
+</div>
+
+# Introduction
+
+MLX42 is a performant, easy to use, cross-platform windowing library to create
+graphical applications without having to work directly with the native Windowing 
+Framework of the given operating system.
+
+Additionally it provides primitive tools for drawing onto the window such as
+displaying images from disk or creating a drawing surface to draw pixels on.
+
+---
+
+## Toc
+
+* [Basics](./Basics.md)
+* [Colors](./Colors.md)
+* [Functions](./Functions.md)
+* [Hooks](./Hooks.md)
+* [Images](./Images.md)
+* [Input](./Input.md)
+* [Shaders](./Shaders.md)
+* [Textures](./Textures.md)
+* [XPM42](./XPM42.md)
+
+---
+
+## Support
+
+Currently supported operating systems:
+| Operating system 	| Version                                     	|
+|------------------	|---------------------------------------------	|
+| `Windows NT`      | Windows 7 - Windows 11                      	|
+| `MacOS`           | Mojave - Monterey (Including Apple Silicon) 	|
+| `Linux`           | Anything running X11 / Wayland              	|
+
+## Initialization
+
+The very first step for initialization is to execute the mlx_init function.
+It is responsible for setting up the GLFW windowing library which 
+creates a connection between your software and the display. It also loads the 
+OpenGL function pointers, compiling the shaders and more.
+
+It returns a mlx_t* which is a structure containing the current window instance.
+With this instance you can manipulate, hook onto and control what happens inside 
+your window instance. For example you would use it to send graphical instructions such as 
+creating an image, which is used to display pixel data. You can also detect key
+interactions such as checking if the W, A, S or D key is currently being pressed.
+
+| Function          | Description                                                  |
+|-------------------|--------------------------------------------------------------|
+| `mlx_init()`      | Initialize and run a new window instance.                    |
+| `mlx_loop()`      | Keep the window open as long as a shutdown is not requested. |
+| `mlx_terminate()` | Destroy and clean up all images and mlx resources.            |
+
+If mlx_init() fails to set up the connection to the graphical system, it will
+return NULL, otherwise a non-null pointer is returned as a handle for the window.
+
+## Linking
+
+In order to use the functions in MLX, you'll need to link it with your application.
+
+To do this, simply add the following arguments at the linking stage:
+| Operating System | Flags                                                         |
+|------------------|---------------------------------------------------------------|
+| `Windows NT`     | -lglfw3 -lopengl32 -lgdi32                                    |
+| `MacOS`          | -lglfw(3) -framework Cocoa -framework OpenGL -framework IOKit |
+| `Linux`          | -ldl -lglfw(3) -pthread -lm                                   |
+
+**NOTE: For some UNIX systems the flag for glfw might be with or without a 3 at the end.**
+
+## Build options
+
+When building MLX42 you can pass certain build options to cmake.
+
+The options are passed as follows `cmake -DDEBUG=1 -DGLFW_FETCH=0`.
+
+### Available options
+
+* `DEBUG`: Enables assertion macros and compiles with -g in order for debugging with lldb.
+* `GLFW_FETCH`: Fetches GLFW if it can't be found on the system at all, allows you to then install it with `sudo make install` under the `build/_deps` folder.
+
+## Debugging
+
+MLX was designed with ease of debugging in mind, therefore if the project is built with
+**cmake -DDEBUG=1** it will keep in the assertion macros and notify you of any bad input
+given to functions. Additionally it comes with its own runtime error checking via
+**mlx_errno** and **mlx_strerror** to properly identify what went wrong during the runtime
+of the library.
+
+## Notes
+
+Keep in mind that while technically MLX42
+does support multiple window instances it currently has no functional support for
+it. That is, no proper way of handling multiple windows.
+
+---
+
+## F.A.Q
+
+Q: **_"It'S NoT In ThE SuBjeCt!"_**
+
+A: So what? Subjects can change and so if something is not working correctly it should be replaced. Sure you can argue this point but you can also be the reason that it CAN be in the subject instead. Have an open mind :)
+
+Q: **_"Ok, so, can I use it ?"_**
+
+A: Officially, _no_. However, ask your head of studies first about using it, see what they think. Some students might be evangelical enthusiasts about what is stated in the subject and are technically in every right to fail you as long as this library is not endorsed, if you were to ask me (W2) then yes why not?
+
+Q: **_"Is it faster?"_**
+
+A: From my personal projects there was a considerable performance gain, especially when compiled with `-Ofast`. Projects such as FDF could rotate their maps mindblowingly smooth and even larger maps with a width and height of 1000+ points moved/rotated relatively smooth, so in short, yes.
+
+Q: **_"Can I just drag and drop it into my old project and just not do anything?"_**
+
+A: No. That's not how libraries work. Sure they target and do sort of the same thing but the functions each library provides are too different, even a little bit in terms of behavior. And no there is no easy way to convert from the "old" to the "new" it will be somewhat tedious work.
+
+Q: **_"We should be able to deal with the fact that MiniLibX is not perfect, it is by design and makes us better programmers."_**
+
+A: Struggle does bring out the best in most people but it is also not ideal in this case. I think so at least, that it's really expected that libraries that are publicly available should be usable, stable, easy to use and well documented. Nobody uses a library because it is annoying to work with and afterwards think to themselves they have learned something after they are done struggling. The only thing people learn from this is how to navigate around the shortcomings instead.
+
+Q: **_"Why not use some other library? Why this one and not any other library."_**
+
+A: It is your choice what to use! I wrote this in my free time in an attempt to introduce some good change and to improve the learning experience at 42. If you don't like my library at least let me know what it is so I can improve on it.
+
+Q: **_"Do you hate MiniLibX? Is this some personal vendetta, do you work for the CIA ?"_**
+
+A: No, I just want to improve 42, that's it.
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Basics
+
+Before starting please read the [index page](./index.md).
+Starting with MLX42 is very straightforward. Here we will make a simple program that will use a makefile and compile
+MLX42.
+
+## Makefile Example
+
+If you're curious as to how to configure a makefile with MLX42 here is a Makefile example from a project.
+Use this as a guide on how to compile MLX42 and use it in your application.
+
+First of all we need a makefile that can compile our program, below you can see a sample makefile:
+
+```makefile
+NAME	:= Game
+CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast
+LIBMLX	:= ./lib/MLX42
+
+HEADERS	:= -I ./include -I $(LIBMLX)/include
+LIBS	:= $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm
+SRCS	:= $(shell find ./src -iname "*.c")
+OBJS	:= ${SRCS:.c=.o}
+
+all: libmlx $(NAME)
+
+libmlx:
+	@cmake $(LIBMLX) -B $(LIBMLX)/build && make -C $(LIBMLX)/build -j4
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS) && printf "Compiling: $(notdir $<)"
+
+$(NAME): $(OBJS)
+	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+
+clean:
+	@rm -rf $(OBJS)
+	@rm -rf $(LIBMLX)/build
+
+fclean: clean
+	@rm -rf $(NAME)
+
+re: clean all
+
+.PHONY: all, clean, fclean, re, libmlx
+```
+
+## Main
+
+Below is a simple main into starting a window. MLX42 has several nice features that allow you to predefine how it should behave during runtime such as `MLX_HEADLESS` running it without opening a window or `MLX_STRETCH_IMAGE` which stretches the window content with the window size.
+
+The exact structure `mlx_init()` is basically a handle that stores important information
+regarding the window and looks as follows:
+
+```c
+/**
+ * Main MLX handle, carries important data in regards to the program.
+ * @param window The window itself.
+ * @param context Abstracted opengl data.
+ * @param width The width of the window.
+ * @param height The height of the window.
+ * @param delta_time The time difference between the previous frame and the current frame.
+ */
+typedef struct mlx
+{
+	void*		window;
+	void*		context;
+	int32_t		width;
+	int32_t		height;
+	double		delta_time;
+}	mlx_t;
+```
+
+Between initializations you can do everything that is required such as drawing your image or opening files.
+Once `mlx_loop()` is reached the program remains open until a shutdown is somehow requested, e.g: closing the window.
+
+Because we want programs to be interactive and do stuff it's very useful to hook into the looping process of `mlx_loop()`.
+In order to achieve this we use [hooks](./Hooks.md).
+
+`NOTE: Compile MLX42 with DEBUG=1 to see assertions and to add debug flags. This can help you find critical mistakes during development!`
+
+```c
+// Written by Bruh
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 256
+#define HEIGHT 256
+
+// Exit the program as failure.
+static void ft_error(void)
+{
+	fprintf(stderr, "%s", mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
+}
+
+// Print the window width and height.
+static void ft_hook(void* param)
+{
+	const mlx_t* mlx = param;
+
+	printf("WIDTH: %d | HEIGHT: %d\n", mlx->width, mlx->height);
+}
+
+int32_t	main(void)
+{
+
+	// MLX allows you to define its core behaviour before startup.
+	mlx_set_setting(MLX_MAXIMIZED, true);
+	mlx_t* mlx = mlx_init(WIDTH, HEIGHT, "42Balls", true);
+	if (!mlx)
+		ft_error();
+
+	/* Do stuff */
+
+	// Create and display the image.
+	mlx_image_t* img = mlx_new_image(mlx, 256, 256);
+	if (!img || (mlx_image_to_window(mlx, img, 0, 0) < 0))
+		ft_error();
+
+	// Even after the image is being displayed, we can still modify the buffer.
+	mlx_put_pixel(img, 0, 0, 0xFF0000FF);
+
+	// Register a hook and pass mlx as an optional param.
+	// NOTE: Do this before calling mlx_loop!
+	mlx_loop_hook(mlx, ft_hook, mlx);
+	mlx_loop(mlx);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Colors
+Colors are a fundamental concept in graphics programming. A common color model is RGBA, which MLX uses for storing and displaying images.
+
+## Composition
+Colors are commonly represented as `4-byte` integers. This 4-byte integer is a grouping of four individual channels: red, green, blue and alpha, with alpha representing transparency. Additionally, colors are usually shown in hexadecimal to make each channel value identifiable:
+
+Channel | Description   | RGBA representation
+:------:|:-------------:|:-------------------:
+`R`     | Red Channel   | `0xFF000000`
+`G`     | Green Channel | `0x00FF0000`
+`B`     | Blue Channel  | `0x0000FF00`
+`A`     | Alpha Channel | `0x000000FF`
+
+Combining these four channel values into one will result in a non-transparent, white color.
+
+## Encoding & Decoding
+
+In order to set each channel's byte we can use bit-shifting operations.
+
+A function that combines four individual channel bytes into a single integer using bit-shifting looks like this:
+
+```c
+// 'Encodes' four individual bytes into an int.
+int get_rgba(int r, int g, int b, int a)
+{
+    return (r << 24 | g << 16 | b << 8 | a);
+}
+```
+
+We can also do this in reverse to retrieve each individual byte again:
+
+```c
+// Get the red channel.
+int get_r(int rgba)
+{
+    // Move 3 bytes to the right and mask out the first byte.
+    return ((rgba >> 24) & 0xFF);
+}
+
+// Get the green channel.
+int get_g(int rgba)
+{
+    // Move 2 bytes to the right and mask out the first byte.
+    return ((rgba >> 16) & 0xFF);
+}
+
+// Get the blue channel.
+int get_b(int rgba)
+{
+    // Move 1 byte to the right and mask out the first byte.
+    return ((rgba >> 8) & 0xFF);
+}
+
+// Get the alpha channel.
+int get_a(int rgba)
+{
+    // Move 0 bytes to the right and mask out the first byte.
+    return (rgba & 0xFF);
+}
+```
+
+## Example
+
+In this small example we will create a white image:
+
+```c
+#include "MLX42/MLX42.h"
+#include <stdlib.h>
+#include <string.h>
+
+// Bytes Per Pixel. Since each pixel is represented as an integer, it will be four bytes for four channels.
+#define BPP sizeof(int32_t)
+
+int32_t	main(void)
+{
+    // Init mlx with a canvas size of 256x256 and the ability to resize the window.
+    mlx_t* mlx = mlx_init(256, 256, "MLX42", true);
+    
+    if (!mlx) exit(EXIT_FAILURE);
+
+    // Create a 128x128 image.
+    mlx_image_t* img = mlx_new_image(mlx, 128, 128);
+
+    // Set the channels of each pixel in our image to the maximum byte value of 255. 
+    memset(img->pixels, 255, img->width * img->height * BPP);
+
+    // Draw the image at coordinate (0, 0).
+    mlx_image_to_window(mlx, img, 0, 0);
+
+    // Run the main loop and terminate on quit.  
+    mlx_loop(mlx);
+    mlx_terminate(mlx);
+
+    return (EXIT_SUCCESS);
+}
+
+```
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Textures
+
+Textures are disk loaded images stored in memory and hold a buffer of pixel data along with information 
+about the image such as width, height, and bytes per pixel.
+
+Textures on their own are not displayed to the screen but have to be displayed using [Images](./Images.md).
+To do so you can use the `mlx_texture_to_image` function that creates an image large enough to store the 
+texture which then can be displayed.
+
+## Textures vs Images
+
+There might be a bit of confusion at first between what an image and a texture is.
+
+Textures:
+* Can be interpreted as a painter's "color palette".
+* Created by loading an image file FROM disk.
+* Simply contain the pixels, width, height and bytes per pixel information.
+* Do not get displayed on the window directly.
+
+Images:
+* Can be interpreted as a painter's "canvas".
+* Can be created FROM a texture or an empty buffer!
+* Carries more information besides what the image buffer is such as instance count.
+* Also holds pixel data but is shared among its instances, it is not loaded from disk but stored in memory.
+
+## Example
+
+To summarize, in order to display a sprite image onto our window we would first load the texture from 
+disk into our memory and store the information in a `mlx_texture_t*`. After that we create a new `mlx_image_t*` 
+based on the information given by the texture and then we can display our image onto the window.
+
+Below is a small code example of how this would be achieved:
+
+```C
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 512
+#define HEIGHT 512
+
+static void error(void)
+{
+	puts(mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
+}
+
+int32_t	main(void)
+{
+	// Start mlx
+	mlx_t* mlx = mlx_init(WIDTH, HEIGHT, "Test", true);
+	if (!mlx)
+        error();
+
+	// Try to load the file
+	mlx_texture_t* texture = mlx_load_png("./temp/sus.png");
+	if (!texture)
+        error();
+	
+	// Convert texture to a displayable image
+	mlx_image_t* img = mlx_texture_to_image(mlx, texture);
+	if (!img)
+        error();
+
+	// Display the image
+	if (mlx_image_to_window(mlx, img, 0, 0) < 0)
+        error();
+
+	mlx_loop(mlx);
+
+	// Optional, terminate will clean up any leftovers, this is just to demonstrate.
+	mlx_delete_image(mlx, img);
+	mlx_delete_texture(texture);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Hooks in MLX42
+
+Hooks allow you to add your own functions to the main loop execution of the program, aka these functions get executed every frame.
+They also serve to intercept certain keypresses such as scrolling or pressing enter.
+
+Only one hook can be set at a time! You cannot attach/have multiple specialized hooks.
+You can however have multiple generic hooks.
+
+## Specialized Hooks
+
+### Scroll hook
+```c
+
+/**
+ * Callback function used to handle scrolling.
+ * 
+ * @param[in] x The mouse x delta.
+ * @param[in] y The mouse y delta.
+ * @param[in] param Additional parameter to pass to the function.
+ */
+typedef void (*mlx_scrollfunc)(double xdelta, double ydelta, void* param);
+
+/**
+ * This function sets the scroll callback, which is called when a scrolling 
+ * device is used, such as a mouse wheel.
+ * 
+ * @param[in] mlx The MLX instance handle.
+ * @param[in] func The scroll wheel callback function.
+ * @param[in] param An additional optional parameter.
+ */
+void mlx_scroll_hook(mlx_t* mlx, mlx_scrollfunc func, void* param);
+```
+
+### Close Hook
+
+```c
+
+/**
+ * Callback function used to handle window closing which is called when the user attempts 
+ * to close the window, for example by clicking the close widget in the title bar.
+ * 
+ * @param[in] param Additional parameter to pass to the function.
+ */
+typedef void (*mlx_closefunc)(void* param);
+
+/**
+ * This function sets the close callback, which is called in attempt to close 
+ * the window device such as a close window widget used in the window bar.
+ * 
+ * @param[in] mlx The MLX instance handle.
+ * @param[in] func The close callback function.
+ * @param[in] param An additional optional parameter.
+ */
+void mlx_close_hook(mlx_t* mlx, mlx_closefunc func, void* param);
+```
+
+### Resize Hook
+
+```c
+
+/**
+ * Callback function used to handle window resizing.
+ * 
+ * @param[in] width The new width of the window.
+ * @param[in] height The new height of the window. 
+ * @param[in] param Additional parameter to pass to the function.
+ */
+typedef void (*mlx_resizefunc)(int32_t width, int32_t height, void* param);
+
+/**
+ * This function sets the resize callback, which is called when the window is
+ * resized
+ * 
+ * @param[in] mlx The MLX instance handle.
+ * @param[in] func The resize callback function.
+ * @param[in] param An additional optional parameter.
+ */
+void mlx_resize_hook(mlx_t* mlx, mlx_resizefunc func, void* param);
+```
+
+### Key hook
+
+Use a key hook if you want single keypress detection or more precision as to how a key is pressed, such as checking for modifier keys or getting the raw os keycode.
+
+```c
+
+/**
+ * Key function callback data.
+ * Data related to the mlx_key_hook function
+ * 
+ * @param key The key that was pressed.
+ * @param action The action that was done with the key.
+ * @param os_key The os_key is unique for every key, and will have a 
+ * different value/keycode depending on the platform. 
+ * They may be consistent on different platforms.
+ * @param modifier The modifier key that was pressed, 0 if none.
+ */
+typedef struct mlx_key_data
+{
+	keys_t		key;
+	action_t	action;
+	int32_t		os_key;
+	modifier_key_t	modifier;
+}	mlx_key_data_t;
+
+
+/**
+ * Callback function used to handle keypresses.
+ * 
+ * @param[in] keydata The callback data, contains info on key, action, ...
+ * @param[in] param Additional parameter to pass to the function.
+ */
+typedef void (*mlx_keyfunc)(mlx_key_data_t keydata, void* param);
+
+/**
+ * This function sets the key callback, which is called when a key is pressed
+ * on the keyboard. Useful for single key press detection.
+ * 
+ * @param[in] mlx The MLX instance handle.
+ * @param[in] func The key press callback function.
+ * @param[in] param An additional optional parameter.
+ */
+void mlx_key_hook(mlx_t* mlx, mlx_keyfunc func, void* param);
+```
+
+## Generic Hook
+
+Generic hooks execute each frame and are useful for stuff that needs to be updated every frame.
+
+```c
+/**
+ * Generic loop hook for any custom hooks to add to the main loop. 
+ * Executes a function per frame, so be careful.
+ * 
+ * @param[in] mlx The MLX instance handle.
+ * @param[in] f The function.
+ * @param[in] param The parameter to pass onto the function.
+ * @returns Wether the hook was added successfully. 
+ */
+bool mlx_loop_hook(mlx_t* mlx, void (*f)(void*), void* param);
+```
+
+# Examples
+
+Here are some simple examples on how to implement each one of the hooks in a simple fashion.
+
+## Key Hook
+
+```c
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdio.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 720
+#define HEIGHT 480
+
+void my_keyhook(mlx_key_data_t keydata, void* param)
+{
+	// If we PRESS the 'J' key, print "Hello".
+	if (keydata.key == MLX_KEY_J && keydata.action == MLX_PRESS)
+		puts("Hello ");
+
+	// If we RELEASE the 'K' key, print "World".
+	if (keydata.key == MLX_KEY_K && keydata.action == MLX_RELEASE)
+		puts("World");
+
+	// If we HOLD the 'L' key, print "!".
+	if (keydata.key == MLX_KEY_L && keydata.action == MLX_REPEAT)
+		puts("!");
+}
+
+int32_t	main(void)
+{
+	mlx_t* mlx;
+
+	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+		return (EXIT_FAILURE);
+
+	mlx_key_hook(mlx, &my_keyhook, NULL);
+	mlx_loop(mlx);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+## Scroll Example
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdio.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 720
+#define HEIGHT 480
+
+void my_scrollhook(double xdelta, double ydelta, void* param)
+{
+	// Simple up or down detection.
+	if (ydelta > 0)
+		puts("Up!");
+	else if (ydelta < 0)
+		puts("Down!");
+	
+	// Can also detect a mousewheel that goes along the X (e.g: MX Master 3)
+	if (xdelta < 0)
+		puts("Sliiiide to the left!");
+	else if (xdelta > 0)
+		puts("Sliiiide to the right!");
+}
+
+int32_t	main(void)
+{
+	mlx_t* mlx;
+
+	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+		return (EXIT_FAILURE);
+
+	mlx_scroll_hook(mlx, &my_scrollhook, NULL);
+	mlx_loop(mlx);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Images
+
+Images are like a canvas for a painting, they are used to display pixel information onto the window and work with something called instances.
+Instances are copies of the canvas and let you display an image multiple times throughout the window. The idea behind it is that you already 
+have the pixel information in memory and you can simply create duplicates everywhere.
+
+Each instance has an X, Y and Z parameter to determine their position and depth.
+A change in the image's buffer results in a change for all currently displayed instances.
+
+An image on its own is very simple:
+```c
+/**
+ * An image with an individual buffer that can be rendered.
+ * Any value can be modified except the width/height and context.
+ * 
+ * @param width The width of the image.
+ * @param height The height of the image.
+ * @param pixels The literal pixel data.
+ * @param instances An instance carries the X, Y, Z location data.
+ * @param count The element count of the instances array.
+ * @param enabled If true the image is drawn onto the screen, else it's not.
+ * @param context Abstracted OpenGL data.
+ */
+typedef struct mlx_image
+{
+	const uint32_t	width;
+	const uint32_t	height;
+	uint8_t*		pixels;
+	mlx_instance_t*	instances;
+	int32_t			count;
+	bool			enabled;
+	void*			context;
+}	mlx_image_t;
+```
+
+To display the image all that is needed is to call the `mlx_image_to_window` function to create a new copy/instance:
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <memory.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 5120
+#define HEIGHT 2880
+
+static void error(void)
+{
+	puts(mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
+}
+
+int32_t	main(void)
+{
+	// Start mlx
+	mlx_t* mlx = mlx_init(WIDTH, HEIGHT, "Test", true);
+	if (!mlx)
+        error();
+
+	// Create a new image
+	mlx_image_t* img = mlx_new_image(mlx, 512, 512);
+	if (!img)
+		error();
+
+	// Set every pixel to white
+	memset(img->pixels, 255, img->width * img->height * sizeof(int32_t));
+
+	// Display an instance of the image
+	if (mlx_image_to_window(mlx, img, 0, 0) < 0)
+        error();
+
+	mlx_loop(mlx);
+
+	// Optional, terminate will clean up any leftovers, this is just to demonstrate.
+	mlx_delete_image(mlx, img);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+After we have put an instance of an image onto the window we can simply change the position of the image at any time
+we want it to be moved:
+```c
+// Modify the x & y position of an already existing instance.
+img->instances[0].x += 5;
+img->instances[0].y += 5;
+```
+
+## Transparency
+In regards to transparency, aka the `z` value, use `mlx_set_instance_depth` to set the z/depth value of the image.
+The z value determines the depth of the image, as in, is it in the foreground or background.
+
+If two instances are on the same z layer and are transparent, the transparency breaks and the instances cut off each other.
+To prevent this by default any new instances put onto window will be on their own layer.
+
+## Internals
+A noticeable feature of MLX42 is that it partly takes care of the rendering for you, that is, after you've created your image you just display it 
+and after that feel free to modify it without having to re-put it onto the window. In short MLX takes care of updating your images at all times.
+
+Internally this is done via a render queue, anytime the `mlx_image_to_window` function is used, a new entry is added to a linked list.
+Every frame MLX will iterate over this linked list and execute a drawcall to draw that image onto the window.
+
+## Common functions
+
+```c
+// Creates a whole new image.
+mlx_image_t* mlx_new_image(mlx_t* mlx, uint16_t width, uint16_t height)
+```
+
+```c
+// Creates a new instance/copy of an already existing image.
+void mlx_image_to_window(mlx_image_t* img, int32_t x, int32_t y)
+```
+
+```c
+// Deletes an image and removes it from the render queue.
+void mlx_delete_image(mlx* mlx, mlx_image_t* image)
+```
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Input methods
+
+MLX42 provides various ways of detecting input, you can read about all the available hooks on the [Hooks](./Hooks.md) page.
+
+## Key Detection
+
+### Generic Hook + function
+
+The easiest way of detecting continuous keypressing is via a generic hook and then checking if the specific key is down.
+This is the 'traditional' way of detecting if a key is down even in modern game engines. It provides the quickest feedback and if it's used to, say, move a character, the smoothest result.
+
+```c
+void	hook(void *param)
+{
+	mlx_t	*mlx;
+
+	mlx = param;
+	if (mlx_is_key_down(param, MLX_KEY_ESCAPE))
+		mlx_close_window(param);
+	if (mlx_is_key_down(param, MLX_KEY_UP))
+		g_img->instances[0].y -= 5;
+	if (mlx_is_key_down(param, MLX_KEY_DOWN))
+		g_img->instances[0].y += 5;
+	if (mlx_is_key_down(param, MLX_KEY_LEFT))
+		g_img->instances[0].x -= 5;
+	if (mlx_is_key_down(param, MLX_KEY_RIGHT))
+		g_img->instances[0].x += 5;
+}
+```
+
+### Hook Function
+
+For more exact input detection such as checking if the key was pressed with `Alt` or `ctrl` you should use the actual Key hook.
+Keep in mind that using a keyhook results in a slower feedback compared to using a generic hook but grants you more control in key detection.
+
+```c
+void	key_hook(mlx_key_data_t keydata, void* param)
+{
+	if (keydata.key == MLX_KEY_A && keydata.action == MLX_RELEASE && keydata.modifier == MLX_CONTROL)
+		puts("Gotta grab it all!");
+}
+```
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# Shaders
+
+In computer graphics, a shader is a type of computer program used for shading in 3D/2D scenes (the production of appropriate levels of light, darkness, and color in a rendered image). MLX42 exposes the shaders and compiles them into the library for portability.
+
+```glsl
+
+// Example of shader code, GLSL is similar to C but not quite.
+
+#version 330 core
+
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+uniform mat4 ProjMatrix;
+
+void main()
+{
+	gl_Position = ProjMatrix * vec4(aPos, 1.0);
+	TexCoord = aTexCoord;
+}
+
+```
+
+## Beware
+
+Shaders aren't really meant to be used by students but are more there for the convenience of developers. (though some advanced students might make some use of them)
+
+# Compilation
+
+Shaders are converted into a `.c` appropriate format and then compiled into the library and referenced via a `extern` global variable appropriately named `vert_shader` & `frag_shader`. The reason this is done is to keep the final game/executable portable, that is being able to use it at any given location within a filesystem, while still being easy to work on the shaders instead of having to mess with it in the `.c` files directly. 
+
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+# XPM42
+
+XPM42 is a custom file format made for MLX42 to provide an easy to use and understand image file format to learn how 
+images can be stored. The format is based on the actual [XPM3](https://en.wikipedia.org/wiki/X_PixMap) format.
+
+An XPM file basically stores a look-up table inside of it to fetch which character corresponds to which color. Additionally in the
+header there is a character per pixel count, this is due to the limitation of the amount of characters. Each 'Pixel' in the XPM data can 
+be represented by multiple characters.
+
+For example `*.` would be viewed as a single pixel if the characters per pixel count was 2.
+
+## Layout
+
+The file format looks as follows:
+
+```
+!XPM42            <- File declaration
+16 7 2 1 c        <- Width | Height | Color count | Characters per Pixel | Mode (C: Color or M: Monochrome)
+* #FF0000FF       <- Entry always: <Char> <Space> <Hexadecimal> Colors MUST have all four channels (RGBA)
+. #00000000
+**..*...........  <- Literal pixel data
+*.*.*...........
+**..*..**.**..**
+*.*.*.*.*.*..*.*
+**..*..**.*...**
+...............*
+.............**.
+```
+
+## Inner workings
+
+Reading an XPM42 does a whole bunch of stuff but in essence it reads the file header and inserts each color entry into a hash table for fast lookups of the color value, the hash used is FNV-1a. Why, because it's an easy to use hash and also my favourite. After the header is read and the color values are inserted into the table each line is then read and each character is processed and inserted into the pixel buffer of the XPM. There is no collision checking for the lookup table, so artefacts may be present.
+
+## Tools
+
+In the root of the repository is a tools directory in which a python script can convert an existing XPM3 file to XPM42.
+Use this script if you wish to use the XPM42 file format.
+
+## Example
+
+```C
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "MLX42/MLX42.h"
+#define WIDTH 5120
+#define HEIGHT 2880
+
+static void error(void)
+{
+	puts(mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
+}
+
+int32_t	main(void)
+{
+	// Start mlx
+	mlx_t* mlx = mlx_init(WIDTH, HEIGHT, "Test", true);
+	if (!mlx)
+		error();
+
+	// Try to load the file
+	xpm_t* xpm = mlx_load_xpm42("./temp/42.xpm42");
+	if (!xpm)
+		error();
+	
+	// Convert texture to a displayable image
+	mlx_image_t* img = mlx_texture_to_image(mlx, &xpm->texture);
+	if (!img)
+		error();
+
+	// Display the image
+	if (mlx_image_to_window(mlx, img, 0, 0) < 0)
+		error();
+
+	mlx_loop(mlx);
+
+	// Optional, terminate will clean up any leftovers, this is just to demonstrate.
+	mlx_delete_image(mlx, img);
+	mlx_delete_xpm42(xpm);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+```
+
+
+![Example](./assets/XPM_Demo.png)
+
+<!----------------------------------------------------------------------------
+Copyright @ 2021-2022 Codam Coding College. All rights reserved.
+See copyright and license notice in the root project for more information.
+----------------------------------------------------------------------------->
+
+</br>
+<div align="center">
+  <img src="./assets/logo.png" alt="42MLX_Logo">
+</div>
+<div align="center" style="margin-top: 8px;">
+  <sub>Written by <a href="https://portfolio.w2wizard.dev/">W2.Wizard</a> for the 42 Network</sub>
+</div>
+</br>
+
+<div align="center">
+    <h1>Welcome to the MLX42, 42Campus documentation</h1>
+</div>
+
+# Foreword
+If you're considering allowing the use of MLX42 in your campus and wondering why you should do it, how it should work, and what it will take to get it working, then you're in the right place!
+
+MLX42 has been battle-tested multiple times at hackathons and other campuses and has received over 500 commits since 2021. All students share the same sentiment: they enjoy using the library, but it's not too easy to finish the projects. During that time many bugs, leaks, and segfaults have been fixed.
+
+It addresses one of the main problems at 42, which is that although it is a tech school, it does not provide its students with well-maintained tools to improve their education. All a campus wants is to give its students the best they can.
+
+| Campus    | Allowed      | Additional Notes   |
+| ----------|:------------:| :------------------|
+| Codam     |      ✅      |                    |
+| Mulhouse  |      ✅      |                    |
+| Quebec    |      ✅      |                    |
+| Belo Horizonte | ❓      |                    |
+| London    |      ❌      | Just because ?     |
+| São Paulo |      ✅      |                    |
+| Rio       |      ❓      |                    |
+| Malaga    |      ✅      |                    |
+| Singapore |      ❓      | Asked their pedago, awaiting a response.|
+| Barcelona |      ✅      | Would like propose some modifications preferably                   |
+| Nice      |      ✅      | Banned `mlx_put_pixel` & `mlx_resize_image` otherwise fully authorized 🎊                   |
+| Berlin    |      ✅      | Banned `mlx_put_pixel` & `mlx_resize_image` otherwise fully authorized 🎊`                  |
+| Heilbronn |      ✅      |                    |
+| 1337      |      ✅      | 1337 Refers to every campus part of 1337                   |
+| Angoulême |      ✅      |                    |
+| Lausanne  |      ❓      | No idea how to reach them                   |
+| Prague    |      ✅      |                    |
+| 19        |      ❌      | No reason (?) You can probably blame paris again I guess                   |
+| Hive      |      ✅      |                    |
+| Le Havre  |      ✅      |                    |
+| Vienna    |      ❓      |                    |
+| Seoul     |      ❌      | I didn't really understand why but basically as long as Paris says no they will too                  |
+| Madrid    |      ✅      | Authorized since the Linux migration                   |
+| Porto     |      ❌      | Not Auth from Paris|
+| Lisboa    |      ❌      | Not Auth from Paris|
+| Wolfsburg |      ❌      | Not Auth from Paris|
+| Urduliz   |      ❌      | Not Auth from Paris|
+| Paris     |      ❌      | Because its Paris 🤡🤡🤡|
+
+Regarding other campuses the status is unknown.
+
+---
+
+# Technical comparison
+## MiniLibX
+The miniLibX has many problems that have been around for almost 10+ years:
+
+- `Not maintained`: The library is practically dead, and it's unclear who is available to fix the bugs. It hasn't had any changes in a long time, and student pull requests on Github for the X11 version go unnoticed. Issues are also being ignored.
+
+- `Poor documentation`: The documentation consists of a few man pages that are outdated and an online documentation created by another student. It's understandable that students have to learn on their own, but a library with an extensive API requires proper documentation for anyone to start understanding it.
+
+- `Poor execution`: There are multiple versions: OpenGL, Swift, and X11. Instead of becoming better with each new iteration, they stay the same with no real improvement. It should be future-proof and not dependent on a specific platform. People are struggling with the there being so many different versions that they start losing track where the problem actually is.
+
+- `Not cross-platform`: Students constantly encounter the same problem: at school they work with MacOS, but at home they use Linux. Or they write their project on Linux, but want to show it to their parents using Windows or MacOS. At each point, miniLibX fails to fill that gap. The pandemic in 2019 showed just how much students struggled to evaluate each other using different machines and versions.
+
+---
+
+## MLX42
+
+The main goal of MLX42 is to address all of these shortcomings of the original versions. There are some differences, mainly in the way images are rendered, but everything else is basically the same.
+
+So far, all of the drawbacks of miniLibX have been taken care of, and students using it are enjoying it!
+
+### Rendering
+
+One of the biggest differences between the two libraries is the way rendering is handled.
+
+In `miniLibX`, students change the buffer of an image and then push it to the window.
+In `MLX42`, students put the image to the window and can change the buffer at any time, resulting in an immediate update to the image.
+
+MLX42 uses instances instead. An image is like the original painting, while instances are individual copies of this painting on the window.
+
+There is no window clearing function because students need to learn how to properly manage their images. They can still delete images and turn instances on or off, of course.
+
+Internally, it uses batched rendering to further improve performance. The actual documentation and the code itself have more details.
+
+### Maintained & Open-source
+
+The main goal of MLX42 is to empower students and pedagogues by giving them the ability to maintain and fix bugs, instead of leaving their complaints unaddressed. By being open-source, students can explore the code and submit pull requests.
+
+### Documentation
+The repository comes with a well-maintained [Wiki](https://github.com/codam-coding-college/MLX42/wiki) and documentation in the form of `markdown` files in the repository root.
+
+### Build system
+
+MLX42 initially used `make`, but it was inflexible and caused weird bugs for others. Since version 2.3.0 it uses `cmake` for a truly cross-platform build system.
+
+Students do not need to understand how to use `cmake`, as building the library requires only two shell commands. The instructions on how to build the library are provided to them.
+
+### XPM42
+For historical reasons, I included my own file format that mimics XPM3. In the original miniLibX, the way XPM files were handled made no sense, as they were supposed to be compiled into the binary. Instead, miniLibX parsed the files and pasted the data into memory.
+
+In the `tools` folder, there is a python script that converts XPM3 to XPM42. XPM42 is available as an alternative, but it is highly encouraged to use the PNG importer, which does not leak and uses lodepng for parsing.
+
+---
+
+### How can I migrate? What is necessary to change?
+
+Migrating to MLX42 is easy and requires minimal effort, it requires just 2 dependencies in order to work.
+
+#### Dependencies
+- [CMake: >= 3.18.0](https://cmake.org/download/)
+- [GLFW: >= 3.3.6](https://github.com/glfw/glfw)
+
+It is up to your pedago staff or system administrator to determine how to distribute MLX42 to students.
+
+The options are:
+
+- `A`: Install it on the machine in a location such as /usr/local/lib and use -lmlx42 to link it.
+
+- `B`: Have students clone the repository, preferably as a submodule, and include it in their repository.
+
+There is not much else to do besides these steps. It is a straightforward replacement, and the choice of distribution is up to the campus.
+
+## F.A.Q
+
+Q: **_"It has too many features! I think students should implement some of them themselves including some functions..."_**
+
+A: If there is one frustrating point in this entire F.A.Q then it is this one. Because 42 Network's pedago never actually clarifies what this even means? They don't communicate what is supposededly "too useful". Because if they did then it wouldn't require having to write this entire F.A.Q and pointing out all their flawed arguments. It's been 2 years now and not once have the maintainers been approached by the network's pedago.
+
+***WHAT*** functions are too useful you may wonder? Well really there aren't many if any that we can think of. The majority of additional functions are just GLFW wrappers to enable more extensive customization of the window. This includes setting custom cursors or app icons which really don't add any complexity nor are students able to do this themselves anyway. They are available without impeding their learning.
+
+If there was something too useful that really criticaly hinders the adoption of this library. I would advise that we use communication much like any other species of this planet to resolve it.
+
+---
+
+Q: **_"The `mlx_put_pixel` works too well..."_**
+
+A: Rather than purposefully sabotaging the library to make a point, I deemed it necessary that the library simply works. By default, this function is already banned by all subjects, and the main idea was to force students to use images.
+
+In MLX42 it always starts with an image, and students are forced to face images no matter what. They still face the same learning curve of how to modify the buffer of an image and learn the concept of bit shifting one way or another.
+
+Our proposal is to allow its use in the first three graphics projects (fract-ol, fdf, so_long) and later ban it for the remaining ones (Cub3D, MiniRT), so students can become familiar with it and then need to explore its workings.
+
+---
+
+Q: **_"Are the libraries 1:1 identical?"_**
+
+A: No, there are 100% breaking changes, and changing from miniLibX to MLX42 will not be a simple drop-in replacement. As in their API is slightly different. That was not the idea eitherway, as it would be impossible to fix the problems present in the current miniLibX.
+
+In terms of usage, it's practically identical, while the API Prototypes are slightly different, the usage is roughly the same and the only core difference is the way images are handled.
+
+My suggestion is for students who are using miniLibX to keep using it to finish their project and for new students to prefer the new one or until they reach the next graphical project.
+
+---
+
+Q: **_"With regards to how the rendering is done, won't that make it too easy for students?"_**
+
+A: After almost a year in use, both new students who didn't use the old one and students who used both managed just fine and even appreciated this change in the way rendering works in MLX42.
+
+It is not taking away from the learning experience, it's just shifting a function call from one place to another. Students still find it challenging to finish the actual project, as they still need to learn a whole new library and how it operates.
+
+---
+
+Q: **_"OpenGL? Isn't that a bit old by now?"_**
+
+A: Is OpenGL old? Sure. But in the end, students don't care. You could argue that it's less future-proof and that Vulkan should be used instead. But ask yourself, does one need an artillery cannon to hunt for a rabbit in a forest? If your answer is no, then why does one need Vulkan to render a bunch of quads on a window?
+
+OpenGL is easy to learn, widely supported and it could be argued that it's actually useful for students who are interested in graphics. Anyway, if one day Vulkan is required, a branch and PR can be created and merged!
+
+Just a small reminder that it takes roughly [700+ lines of code](https://github.com/SaschaWillems/Vulkan/blob/master/examples/triangle/triangle.cpp) to render a triangle with vulkan...
+
+Here is the equivalent in [OpenGL](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp).
+
+---
+
+Q: **_"CMake? Won't that confuse them?"_**
+
+A: It is 2 simple commands that are described in the README, and it's a good opportunity to learn a new way to build your projects.
+
+---
+
+Q: **_"Who will maintain MLX42? How long can this be guaranteed?"_**
+
+A: Currently it is being maintained by `lde-la-h` (W2Wizard). However commits from the 42 Pedago or really anyone are very much welcome.
+I myself have been taking care of it since the 1st of January 2021 and aim to continue to support it until I can't.
+
+Once the time comes, someone else will take the lead of maintaining the library whoever that may be.
+
+---
+
+Q: **_"Do we need to update translations or subjects, etc??"_**
+
+A: Regarding the subjects, as long as the library not being adopted there's little room for change in this regard. However the good news is that it basically requires zero effort besides updating the links on the intra and maybe changing the name referenced inside the pdf's. There is really nothing necessary to change besides minor things and to adapt these changes would literally just require at most a day of effort.
+
+If you're really unusure, you as a pedago / campus can just choose to adopt it and mention to students that they can git clone it from here.
+
+---
+
+Q: **_"What if we want to ban some functions?"_**
+
+A: Contact the maintainer or make a PR with the suggestion and watch it get merged or rejected. All it requires is communication... Any change is welcome if it so desired. You don't have to accept anything as is, that is the point of all of this. That if something needs to change, it can actually happen.
+
+---
+
+Q: **_"I don't like the fact that it uses GLFW for the window..."_**
+
+A: `¯\_(ツ)_/¯` Well it's better than using the native windowing framework, at least it is portable, at least if something is wrong with it students can actually fix it by making a PR to the respective repository. Additionally GLFW is pretty standard for things like this, simply checkout any graphics demo and somewhere you will end up with GLFW under the hood quite often.
+
+
+</br>
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/63303990/150698103-7e908ff3-abf8-4b0f-ad54-07a76b6c45e2.png" alt="42MLX_Logo">
+</div>
+<div align="center">
+  <sub>Written by <a href="https://portfolio.w2wizard.dev/">W2.Wizard</a> for Codam</sub>
+    <div align="center">
+	</br>
+	<img src="https://img.shields.io/github/license/codam-coding-college/MLX42" alt="License GPL2.0"> 
+	<img src="https://github.com/codam-coding-college/MLX42/actions/workflows/ci.yml/badge.svg" alt="Build">
+	<img src="https://img.shields.io/github/forks/codam-coding-college/MLX42" alt="Forks">
+    </div>
+</div>
+
+MLX42 is a performant, easy to use, cross-platform, minimal windowing graphics library to create graphical applications without having to work directly with the native windowing framework of the given operating system.
+
+It provides primitive tools to draw textures onto the window as well as modifying them at runtime as they get displayed on the window.
+
+> [!IMPORTANT]
+> At times it may seem like no updates have taken place for a long time. This is expected, the project / lib is considered completed and requires minimal updates. Bug fixes are still guaranteed and the project is still being actively maintained.
+
+# Features ✨
+
+MLX42 comes with a plethora of features that make using it actually a joy instead of a chore.
+
+## Cross-Platform 🖥️
+
+Run it on your grandma's WindowsXP, on your uncle's debian or on a hipster's MacOS!
+No matter what the platform, if MLX42 can build on it, it will run on its native windowing system. 
+
+This allows you to work on your project no matter which machine it is on.
+
+## Documented 📚
+
+MLX42 cares about good documentation, every function, usage and even some internal workings are documented!
+No more guessing and searching how something functions or is supposed to work.
+
+## Performance 🚀
+
+It is built on OpenGL and uses batched rendering to speed up the rendering process compared to other libraries.
+
+## Open source && Community driven 🌐
+This project is being actively maintained by Codam as well as students from the 42 Network. This gives students the direct opportunity to learn more about the library itself as well as fix any potential bugs instead of merely accepting them.
+
+## Emscripten Compatibility 🚀
+MLX42 introduces compatibility with [Emscripten](https://emscripten.org/), allowing MLX42 to run in web browsers through WebAssembly. This modification were made possible thanks to [@PepeLevi](https://github.com/PepeLevi/MLX42_emcc), credits to him for his fork and contributions.
+
+### Highlights
+- **Emscripten Support**: Compile MLX42 with Emscripten, enabling graphical applications to run in a web environment.
+- **WebAssembly Compatibility**: Ensures that MLX42 can be utilized in modern web browsers, expanding its usability beyond traditional desktop environments.
+- **Updated Documentation**: Provided guidance on how to build and run MLX42 projects using Emscripten.
+
+---
+
+## Installation 🏗️
+### General compilation
+
+Overall the building of this project is as follows for ALL systems. As long as CMake can make sense of it.
+
+1. [Download and build MLX42](#download-and-build---mlx42) 
+
+In case your system doesn't have [glfw](https://github.com/glfw/glfw) installed cmake will detect this and download it for you.
+You can then run `sudo make install` in the `_deps` directory of glfw. If you're using a 42 Computer (MacOS, Linux), ask your favourite sysadmin to install it.
+Same goes for CMake or any other dependencies you might need for your system.
+
+However if you can't do either CMake will still be able to fetch GLFW and build it. You can then statically link it from the `_deps` folder.
+
+> [!NOTE]
+> For Codam, GLFW is already installed on the Macs.
+
+> [!NOTE]
+> During the linking stage, the flag to link GLFW can either be: -lglfw3 or -lglfw depending on your system.
+
+1. Compile your program with the library:
+	- For: [MacOS](#for-macos)
+	- For: [Linux](#for-linux)
+	- For: [Windows](#for-windows)
+
+2. Profit!
+
+### Installing to the system
+
+To fully build the library and install it to your system run the following command:
+```bash
+cmake -B build && cmake --build build --parallel --config (Debug|Release|RelWithDebInfo|MinSizeRel) --target install
+```
+
+By default windows will place the installed lib into: `C:\Program Files (x86)\mlx42` and for MacOS / Linux it will be placed into `/usr/local/lib` and `/usr/local/include` respectively.
+
+### Unit tests
+MLX42 comes with some unit tests to ensure the integrity of the library, to build them run the following command:
+```sh
+cmake -DBUILD_TESTS=ON -B build && cmake --build build --parallel
+```
+
+Then simply run them with:
+```sh
+ctest --output-on-failure --test-dir build
+```
+
+----
+
+## Download and build - MLX42
+
+```bash 
+git clone https://github.com/codam-coding-college/MLX42.git
+cd MLX42
+cmake -B build # build here refers to the outputfolder.
+cmake --build build -j4 # or do make -C build -j4
+```
+
+The output library file is called `libmlx42.a` and is located in the `build` folder that you specified.
+
+### Available Options
+
+You can pass build [options](./docs/index.md#available-options) to cmake, e.g: `cmake -DDEBUG=1 -DGLFW_FETCH=0...`. These will for instance let you build it in DEBUG mode or alter any sort of behaviour at build-time.
+
+You can find an example makefile in the documentation [here](https://github.com/codam-coding-college/MLX42/blob/master/docs/Basics.md).
+
+----
+
+## For MacOS:
+
+### Installing the dependencies
+
+If your system has neither GLFW nor CMake its highly recommended you use brew to install those missing dependencies.
+
+For 42 Campuses you can use: [42Homebrew](https://github.com/kube/42homebrew)
+
+Otherwise with homebrew:
+```bash
+brew install glfw
+brew install cmake
+```
+If you are using Apple Silicon (M1 chip or later), note that the Homebrew install path is different.
+You may want to update your shell configuration file. For Zsh users (default shell on newer macOS versions):
+```bash
+nano ~/.zshrc
+export LIBRARY_PATH=/opt/homebrew/lib
+```
+Restart your shell session or restart your terminal for the changes to take effect.
+
+For MacOS you need to use the following flags to compile your program with the library
+in order to link the program with the correct frameworks:
+```bash
+-framework Cocoa -framework OpenGL -framework IOKit
+```
+
+Normally if you simply installed / built `glfw` from source or already have it installed
+the compilation should be:
+```bash
+gcc main.c ... libmlx42.a -Iinclude -lglfw
+```
+
+#### Via [Homebrew](https://brew.sh/) / [42Homebrew](https://github.com/kube/42homebrew)
+```bash
+# Homebrew
+gcc main.c ... libmlx42.a -Iinclude -lglfw -L"/opt/homebrew/Cellar/glfw/3.3.8/lib/"
+
+# 42Homebrew
+gcc main.c ... libmlx42.a -Iinclude -lglfw -L"/Users/$(USER)/.brew/opt/glfw/lib/"
+```
+
+#### MacOS Security:
+
+When running your program in MacOS it may complain, because with Macs you just gotta think differently.
+In case of any security warnings or MacOS telling you it can't verify the author/developer, go to ```Settings > Security & Privacy```.
+
+There will be a pop-up at the bottom telling you that an application tried to run, click the option to let it run.
+
+----
+
+## For Linux:
+
+1. Install the necessary packages:
+
+For Debian like (Ubuntu, Mint, Pop OS...):
+```bash 
+sudo apt update
+sudo apt install build-essential libx11-dev libglfw3-dev libglfw3 xorg-dev
+```
+
+For Arch-linux (Manjaro, Endeavor, Garuda):
+```bash
+sudo pacman -S glfw-x11
+```
+OR (if you use sway/wlroots compositor or other wayland compositor)
+
+```bash
+sudo pacman -S glfw-wayland
+```
+
+2. [Download and build MLX42](#download-and-build---mlx42) 
+
+3. Compile your program with the library:
+
+```bash
+gcc main.c ... libmlx42.a -Iinclude -ldl -lglfw -pthread -lm
+```
+4. Profit!
+
+----
+
+## For Windows (with Windows Subsystem for Linux 2 (WSL2))
+
+> [!IMPORTANT]
+> Before starting with all these steps, [read this](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
+
+1. Set these variables in your `.zshrc` or `.bashrc`:
+```bash
+export DISPLAY=$(ip route list default | awk '{print $3}'):0
+export LIBGL_ALWAYS_INDIRECT=0
+```
+(If the DISPLAY export command is failing, see this [StackOverflow](https://stackoverflow.com/a/61110604) post for alternatives)
+
+2. Download and install an XServer application with extended configuration (XMing does not qualify)
+VcXsrv works: https://sourceforge.net/projects/vcxsrv/
+
+3. Open Windows Defender Firewall, and follow these steps:
+- Go to 'Allow an app or feature through Windows Defender Firewall'
+- Change Settings
+- Find the installed XServer, for VcXsrv that's 'VcXsrv windows server'
+- Enable communication over Private **and** Public network
+Optionally you might be able to provide these settings on first launch of the XServer application,
+and they might not even show up in the list until the first time you start the app.
+
+4. Start the XLaunch application (for VcXsrv) and provide these configuration settings:
+- Leave Display number on auto
+- Start no client
+- **UNTICK** `Native opengl` option
+- **TICK** `Disable access control`
+- Finish starting the server
+
+5. Probably all the other steps for Linux apply, just clone, build and run.
+
+----
+
+## For Windows Native:
+
+> [!IMPORTANT]
+> Be aware that Visual Studio (2022) is required for this. Developing on Windows can be somewhat frustrating.
+
+We highly recommend you simply use [WSL2](#for-windows-with-windows-subsystem-for-linux-2-wsl2) to make this as painless as possible.
+However if you insist on building for windows natively then all you need in terms of dependencies is:
+
+- [CMake](https://cmake.org/download/)
+- [GLFW](https://www.glfw.org/download.html)
+
+Once you have all the dependencies correctly installed `CMake` will generate
+the visual studio project files. Simply build it and once you have a `.lib` file
+move them to your actual project and install them as you would with any other library.
+
+Just in case here's a [video](https://youtu.be/or1dAmUO8k0?t=494) showing you how this can be done. Conveniently this video also covers how you can link `glfw`.
+
+Of course it's up to you to make sure that the code you write is portable. Things that exist on `Unix` don't necessarily exist on `Win32`.
+
+## Example
+
+![MLX42](docs/assets/demo.gif)
+
+```c
+// -----------------------------------------------------------------------------
+// Codam Coding College, Amsterdam @ 2022-2023 by W2Wizard.
+// See README in the root project for more information.
+// -----------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <MLX42/MLX42.h>
+
+#define WIDTH 512
+#define HEIGHT 512
+
+static mlx_image_t* image;
+
+// -----------------------------------------------------------------------------
+
+int32_t ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
+{
+    return (r << 24 | g << 16 | b << 8 | a);
+}
+
+void ft_randomize(void* param)
+{
+	(void)param;
+	for (uint32_t i = 0; i < image->width; ++i)
+	{
+		for (uint32_t y = 0; y < image->height; ++y)
+		{
+			uint32_t color = ft_pixel(
+				rand() % 0xFF, // R
+				rand() % 0xFF, // G
+				rand() % 0xFF, // B
+				rand() % 0xFF  // A
+			);
+			mlx_put_pixel(image, i, y, color);
+		}
+	}
+}
+
+void ft_hook(void* param)
+{
+	mlx_t* mlx = param;
+
+	if (mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
+		mlx_close_window(mlx);
+	if (mlx_is_key_down(mlx, MLX_KEY_UP))
+		image->instances[0].y -= 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_DOWN))
+		image->instances[0].y += 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_LEFT))
+		image->instances[0].x -= 5;
+	if (mlx_is_key_down(mlx, MLX_KEY_RIGHT))
+		image->instances[0].x += 5;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t main(void)
+{
+	mlx_t* mlx;
+
+	// Gotta error check this stuff
+	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+	{
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	if (!(image = mlx_new_image(mlx, 128, 128)))
+	{
+		mlx_close_window(mlx);
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
+	{
+		mlx_close_window(mlx);
+		puts(mlx_strerror(mlx_errno));
+		return(EXIT_FAILURE);
+	}
+	
+	mlx_loop_hook(mlx, ft_randomize, mlx);
+	mlx_loop_hook(mlx, ft_hook, mlx);
+
+	mlx_loop(mlx);
+	mlx_terminate(mlx);
+	return (EXIT_SUCCESS);
+}
+
+```
