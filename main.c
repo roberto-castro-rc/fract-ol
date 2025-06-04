@@ -1,45 +1,68 @@
 #include "fractol.h"
 
-int main (int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	int fractal;
-	fractal = veriction_args(argc, argv);
-	printf("%d", fractal);
-	if(fractal == 1)
+	t_fractol	fractal;
+
+	if (!validate_args(argc, argv))
 	{
-		mandelbrot();
+		print_usage();
+		return (1);
 	}
-	else if(fractal == 2)
+	if (!init_fractol(&fractal, argv))
 	{
-		julia();
+		error_exit("Failed to initialize fractal", &fractal);
 	}
+
+	render_fractal(&fractal);
+
+	mlx_key_hook(fractal.mlx, key_hook, &fractal);
+	mlx_scroll_hook(fractal.mlx, scroll_hook, &fractal);
+	mlx_close_hook(fractal.mlx, close_hook, &fractal);
+	    mlx_mouse_hook(fractal.mlx, mouse_hook, &fractal);        // 🆕 NOVO: Hook para cliques do mouse
+    mlx_cursor_hook(fractal.mlx, cursor_hook, &fractal);      // 🆕 NOVO: Hook para movimento do cursor
+
+	mlx_loop(fractal.mlx);
+
+	cleanup_fractol(&fractal);
 	return (0);
 }
 
-int	veriction_args(int argc, char **argv)
+int	validate_args(int argc, char **argv)
 {
 	if(argc < 2)
 	{
-		printf("Error: No arguments given\n can be: mandelbrot, julia, burningship\n");
+		printf("Error: No arguments given\n can be: mandelbrot, julia\n");
 		return (0);
 	}
-	else if (argc > 4)
+	if (argc == 2 && !strcmp(argv[1], "mandelbrot"))
+		return (1);
+	if (argc == 4 && !strcmp(argv[1], "julia"))
 	{
-		printf("Error: Too many arguments\n can be: mandelbrot, julia, burningship\n");
-		return (0);
-	}
-	else if(strcmp(argv[1], "mandelbrot") == 0)
-	{
-		if (argc != 2)
-			return (0);
 		return (1);
 	}
-	else if(strcmp(argv[1], "julia") == 0)
-	{
-		if (argc != 4)
-			return (0);
-		return (2);
-	}
-	printf("Error: Invalid argument\n");
+	printf("Error: Too many arguments\n can be: mandelbrot, julia, burningship\n");
 	return (0);
+
+}
+
+void	print_usage(void)
+{
+	printf("Usage: ./fractol <fractal_type> [params]\n");
+	printf("Fractal types:\n");
+	printf("  mandelbrot\n");
+	printf("  julia <c_real> <c_imag>\n");
+	printf("Example: ./fractol julia -0.4 0.6\n");
+}
+
+void	error_exit(char *message, t_fractol *fractal)
+{
+	if (message)
+	{
+		fprintf(stderr, "Error: %s\n", message);
+	}
+	if (fractal)
+	{
+		cleanup_fractol(fractal);
+	}
 }

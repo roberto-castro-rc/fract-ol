@@ -1,10 +1,5 @@
 #include "fractol.h"
 
-void	mandelbrot(void)
-{
-	printf("mandelbrot\n");
-	window();
-}
 int	mandelbrot(double c_re, double c_im, int max_iter)
 {
 	double	z_re = 0;      // Parte real de z (número complexo que vai sendo calculado)
@@ -40,13 +35,7 @@ PARA ONDE VAI O INTEIRO DEVOLVIDO:
 - É usado em get_color(iter, max_iter) para determinar a cor do pixel
 - Quanto maior iter, mais "próximo" o ponto está do conjunto
 */
-#include "fractol.h"
 
-void	julia(void)
-{
-	printf("julia");
-	window();
-}
 // FUNÇÃO JULIA - EXPLICAÇÃO DETALHADA
 // A GRANDE DIFERENÇA: no Mandelbrot z começa em 0 e c é o ponto testado
 // No Julia: z começa no ponto testado e c é uma CONSTANTE fixa!

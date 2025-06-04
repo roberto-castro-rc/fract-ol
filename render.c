@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   render.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/04 06:01:17 by rpaulo-c          #+#    #+#             */
+/*   Updated: 2025/06/04 06:01:49 by rpaulo-c         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
 void	render_fractal(t_fractol *fractal)
@@ -19,6 +31,7 @@ void	render_mandelbrot(t_fractol *fractal)
 	int			x;
 	int			y;
 	int			iter;
+
 	y = 0;
 	while (y < fractal->height)
 	{
@@ -46,14 +59,22 @@ void	render_julia(t_fractol *fractal)
 	y = 0;
 	while (y < fractal->height)
 	{
+		x = 0;
 		while (x < fractal->width)
 		{
 			z = pixel_to_complex(x, y, fractal);
-			iter = julia(z.real, z.imag, fractal->julia_c.real, fractal->julia_c.imag, fractal->max_iter);
+			iter = julia(z.real, z.imag, fractal->julia_c.real,
+					fractal->julia_c.imag, fractal->max_iter);
 			color = get_color(iter, fractal->max_iter, fractal->color_shift);
 			put_pixel_to_image(fractal->img, x, y, color);
 			x++;
 		}
 		y++;
 	}
+}
+
+void	put_pixel_to_image(mlx_image_t *img, int x, int y, uint32_t color)
+{
+	if ((x >= 0 && x < (int)img->width) && (y >= 0 && y < (int)img->height))
+		mlx_put_pixel(img, x, y, color);
 }

@@ -1,6 +1,6 @@
 CMakeFiles/mlx42.dir/lib/png/lodepng.c.o: \
-  /nfs/homes/rpaulo-c/Desktop/fractol/libs/MLX42/lib/png/lodepng.c \
-  /nfs/homes/rpaulo-c/Desktop/fractol/libs/MLX42/include/lodepng/lodepng.h \
+  /nfs/homes/rpaulo-c/Desktop/projects/fractol/libs/MLX42/lib/png/lodepng.c \
+  /nfs/homes/rpaulo-c/Desktop/projects/fractol/libs/MLX42/include/lodepng/lodepng.h \
   /usr/include/string.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
   /usr/include/features.h /usr/include/features-time64.h \
