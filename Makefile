@@ -10,7 +10,7 @@ MLX = $(MLX_DIR)/build/libmlx42.a
 
 MLX_FLAGS = -lX11 -lXext -lm -ldl -lglfw
 
-SRC = main.c window.c julia.c mandelbrot.c
+SRC = main.c window.c fractals.c
 
 # Define o diretório obj
 OBJ_DIR = obj
