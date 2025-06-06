@@ -6,9 +6,22 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 
 	fractal = (t_fractol *)param;
 	if (keydata.action == MLX_RELEASE)
-		return;
+		return ; // Ignora eventos de liberação de tecla
 	if (keydata.key == MLX_KEY_ESCAPE)
-		mlx_close_window(fractal->mlx);
+		mlx_close_window(fractal->mlx); // Fecha a janela
+	else if (keydata.key == MLX_KEY_C)
+	{
+		fractal->color_shift = (fractal->color_shift + 10) % 100;
+		render_fractal(fractal);
+	}
+	// Tecla 'V' para mudar esquema de cor
+	else if (keydata.key == MLX_KEY_V)
+	{
+		fractal->color_scheme = (fractal->color_scheme + 1) % 4;
+		render_fractal(fractal);
+		printf("Esquema alterado: %d (0=padrão, 1=psicodélico, 2=fogo, 3=oceano)\n",
+				fractal->color_scheme);
+	}
 	else if (keydata.key == MLX_KEY_UP)
 	{
 		fractal->offset_y -= 0.1 / fractal->zoom;

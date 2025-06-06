@@ -14,11 +14,11 @@
 
 
 // Dimensões da janela
-# define WIDTH 800
-# define HEIGHT 600
+# define WIDTH 1200
+# define HEIGHT 800
 
 // Configurações dos fractais
-# define MAX_ITERATIONS 35
+# define MAX_ITERATIONS 250
 # define ESCAPE_RADIUS 2.0
 
 // Tipos de fractal
@@ -61,6 +61,7 @@ typedef struct s_fractol
 	int			fractal_type;
 	// Sistema de cores
 	int			color_shift;
+	int			color_scheme;
 	// Parâmetros específicos do Julia
 	t_complex	julia_c;
 
@@ -94,7 +95,10 @@ void 	put_pixel_to_image(mlx_image_t *img, int x, int y, uint32_t color);
 // === CONVERSÕES E UTILIDADES ===
 t_complex	pixel_to_complex(int x, int y, t_fractol *data);
 uint32_t	get_color(int iterations, int max_iter, int color_shift);
-
+uint32_t	get_color_psychedelic(int iterations, int max_iter, int color_shift);
+uint32_t	get_color_fire(int iterations, int max_iter, int color_shift);
+uint32_t	get_color_ocean(int iterations, int max_iter, int color_shift);
+uint32_t	get_color_advanced(int iterations, int max_iter, t_fractol *fractal);
 // === EVENTOS ===
 void		key_hook(mlx_key_data_t keydata, void *param);
 void		scroll_hook(double xdelta, double ydelta, void *param);

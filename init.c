@@ -10,6 +10,7 @@ int init_fractol(t_fractol *fractal, char **argv)
 	fractal->offset_y = 0.0;
 	fractal->max_iter = MAX_ITERATIONS;
 	fractal->color_shift = 0;
+	fractal->color_scheme = 0; // 0 = Esquema de cores padrão
 
 	// 🆕 NOVO: Inicialização das variáveis do mouse
     fractal->mouse_pressed = 0;

@@ -6,7 +6,7 @@
 /*   By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 06:01:17 by rpaulo-c          #+#    #+#             */
-/*   Updated: 2025/06/04 06:01:49 by rpaulo-c         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:13:12 by rpaulo-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	render_mandelbrot(t_fractol *fractal)
 		{
 			c = pixel_to_complex(x, y, fractal);
 			iter = mandelbrot(c.real, c.imag, fractal->max_iter);
-			color = get_color(iter, fractal->max_iter, fractal->color_shift);
+			color = get_color_advanced(iter, fractal->max_iter, fractal);
 			put_pixel_to_image(fractal->img, x, y, color);
 			x++;
 		}
@@ -65,7 +65,7 @@ void	render_julia(t_fractol *fractal)
 			z = pixel_to_complex(x, y, fractal);
 			iter = julia(z.real, z.imag, fractal->julia_c.real,
 					fractal->julia_c.imag, fractal->max_iter);
-			color = get_color(iter, fractal->max_iter, fractal->color_shift);
+			color = get_color_advanced(iter, fractal->max_iter, fractal);
 			put_pixel_to_image(fractal->img, x, y, color);
 			x++;
 		}
