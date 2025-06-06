@@ -6,7 +6,7 @@
 #    By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/04 04:54:30 by rpaulo-c          #+#    #+#              #
-#    Updated: 2025/06/04 04:54:35 by rpaulo-c         ###   ########.fr        #
+#    Updated: 2025/06/06 07:59:12 by rpaulo-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,11 @@ OBJ_DIR = obj
 
 # Source files
 SRCS = ft_atof.c \
-       ft_strcmp.c
-
+		ft_strcmp.c \
+		ft_putchar_fd.c \
+		ft_putstr_fd.c \
+		ft_putendl_fd.c
+		
 # Object files
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 

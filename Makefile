@@ -6,7 +6,7 @@
 #    By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/04 05:19:32 by rpaulo-c          #+#    #+#              #
-#    Updated: 2025/06/04 05:19:34 by rpaulo-c         ###   ########.fr        #
+#    Updated: 2025/06/06 06:34:16 by rpaulo-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,11 +31,13 @@ MLX_FLAGS = -lX11 -lXext -lm -ldl -lglfw
 
 # Source files
 SRCS = colors.c \
-       events.c \
-       fractals.c \
-       init.c \
-       main.c \
-       render.c
+		events.c \
+		fractals.c \
+		init.c \
+		main.c \
+		render.c \
+		mouse_events.c \
+		colors_schemes.c
 
 # Object files
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)

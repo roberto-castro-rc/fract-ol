@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/06 05:19:17 by rpaulo-c          #+#    #+#             */
+/*   Updated: 2025/06/06 08:17:32 by rpaulo-c         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
 int	main(int argc, char **argv)
@@ -11,28 +23,24 @@ int	main(int argc, char **argv)
 	}
 	if (!init_fractol(&fractal, argv))
 	{
-		error_exit("Failed to initialize fractal", &fractal);
+		return (EXIT_FAILURE);
 	}
-
 	render_fractal(&fractal);
-
 	mlx_key_hook(fractal.mlx, key_hook, &fractal);
 	mlx_scroll_hook(fractal.mlx, scroll_hook, &fractal);
 	mlx_close_hook(fractal.mlx, close_hook, &fractal);
-	    mlx_mouse_hook(fractal.mlx, mouse_hook, &fractal);        // 🆕 NOVO: Hook para cliques do mouse
-    mlx_cursor_hook(fractal.mlx, cursor_hook, &fractal);      // 🆕 NOVO: Hook para movimento do cursor
-
+	mlx_mouse_hook(fractal.mlx, mouse_hook, &fractal);
 	mlx_loop(fractal.mlx);
-
 	cleanup_fractol(&fractal);
 	return (0);
 }
 
 int	validate_args(int argc, char **argv)
 {
-	if(argc < 2)
+	if (argc < 2)
 	{
-		printf("Error: No arguments given\n can be: mandelbrot, julia\n");
+		ft_putendl_fd("Error: No arguments given", 1);
+		ft_putendl_fd("can be: mandelbrot, julia", 1);
 		return (0);
 	}
 	if (argc == 2 && !strcmp(argv[1], "mandelbrot"))
@@ -41,28 +49,28 @@ int	validate_args(int argc, char **argv)
 	{
 		return (1);
 	}
-	printf("Error: Too many arguments\n can be: mandelbrot, julia, burningship\n");
+	ft_putendl_fd("Error: Too many arguments\n can be: mandelbrot, julia", 1);
 	return (0);
-
 }
 
 void	print_usage(void)
 {
-	printf("Usage: ./fractol <fractal_type> [params]\n");
-	printf("Fractal types:\n");
-	printf("  mandelbrot\n");
-	printf("  julia <c_real> <c_imag>\n");
-	printf("Example: ./fractol julia -0.4 0.6\n");
+	ft_putendl_fd("Usage: ./fractol <fractal_type> [params]", 1);
+	ft_putendl_fd("Fractal types:", 1);
+	ft_putendl_fd("mandelbrot", 1);
+	ft_putendl_fd("julia <c_real> <c_imag>", 1);
+	ft_putendl_fd("Example: ./fractol julia -0.4 0.6", 1);
 }
 
-void	error_exit(char *message, t_fractol *fractal)
-{
-	if (message)
-	{
-		fprintf(stderr, "Error: %s\n", message);
-	}
-	if (fractal)
-	{
-		cleanup_fractol(fractal);
-	}
-}
+// void	error_exit(char *message, t_fractol *fractal)
+// {
+// 	if (message)
+// 	{
+// 		ft_putstr_fd("Error: ", 2);
+// 		ft_putendl_fd(message, 2);
+// 	}
+// 	if (fractal)
+// 	{
+// 		cleanup_fractol(fractal);
+// 	}
+// }

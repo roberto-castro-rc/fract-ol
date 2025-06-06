@@ -6,7 +6,7 @@
 /*   By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 06:01:17 by rpaulo-c          #+#    #+#             */
-/*   Updated: 2025/06/04 20:13:12 by rpaulo-c         ###   ########.fr       */
+/*   Updated: 2025/06/06 05:09:43 by rpaulo-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,7 @@ void	render_julia(t_fractol *fractal)
 		while (x < fractal->width)
 		{
 			z = pixel_to_complex(x, y, fractal);
-			iter = julia(z.real, z.imag, fractal->julia_c.real,
-					fractal->julia_c.imag, fractal->max_iter);
+			iter = julia(z.real, z.imag, fractal);
 			color = get_color_advanced(iter, fractal->max_iter, fractal);
 			put_pixel_to_image(fractal->img, x, y, color);
 			x++;

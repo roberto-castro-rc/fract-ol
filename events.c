@@ -1,4 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   events.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpaulo-c <rpaulo-c@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/06 03:03:43 by rpaulo-c          #+#    #+#             */
+/*   Updated: 2025/06/06 08:00:25 by rpaulo-c         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
+
+static void	handle_arrow_keys(int key, t_fractol *fractal)
+{
+	if (key == MLX_KEY_UP)
+		fractal->offset_y -= 0.1 / fractal->zoom;
+	else if (key == MLX_KEY_DOWN)
+		fractal->offset_y += 0.1 / fractal->zoom;
+	else if (key == MLX_KEY_LEFT)
+		fractal->offset_x -= 0.1 / fractal->zoom;
+	else if (key == MLX_KEY_RIGHT)
+		fractal->offset_x += 0.1 / fractal->zoom;
+	render_fractal(fractal);
+}
+
+static void	adjust_julia_parameter(t_fractol *fractal, double delta)
+{
+	if (fractal->fractal_type == JULIA)
+	{
+		fractal->julia_c.real += delta;
+		if (fractal->julia_c.real > 2.0)
+			fractal->julia_c.real = 2.0;
+		else if (fractal->julia_c.real < -2.0)
+			fractal->julia_c.real = -2.0;
+	}
+}
+
+static void	handle_color_keys(mlx_key_data_t keydata, t_fractol *fractal)
+{
+	if (keydata.key == MLX_KEY_C)
+	{
+		fractal->color_shift = (fractal->color_shift + 10) % 100;
+		render_fractal(fractal);
+	}
+	else if (keydata.key == MLX_KEY_V)
+	{
+		fractal->color_scheme = (fractal->color_scheme + 1) % 4;
+		render_fractal(fractal);
+		ft_putstr_fd("Color scheme changed: ", 1);
+		ft_putchar_fd(fractal->color_scheme + '0', 1);
+		ft_putendl_fd(" (0=default, 1=psychedelic, 2=fire, 3=ocean)", 1);
+	}
+}
 
 void	key_hook(mlx_key_data_t keydata, void *param)
 {
@@ -6,66 +60,22 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 
 	fractal = (t_fractol *)param;
 	if (keydata.action == MLX_RELEASE)
-		return ; // Ignora eventos de liberação de tecla
+		return ;
 	if (keydata.key == MLX_KEY_ESCAPE)
-		mlx_close_window(fractal->mlx); // Fecha a janela
-	else if (keydata.key == MLX_KEY_C)
+		mlx_close_window(fractal->mlx);
+	else if (keydata.key == MLX_KEY_C || keydata.key == MLX_KEY_V)
+		handle_color_keys(keydata, fractal);
+	else if (keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_DOWN
+		|| keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_RIGHT)
+		handle_arrow_keys(keydata.key, fractal);
+	if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
 	{
-		fractal->color_shift = (fractal->color_shift + 10) % 100;
+		adjust_julia_parameter(fractal, 0.01);
 		render_fractal(fractal);
 	}
-	// Tecla 'V' para mudar esquema de cor
-	else if (keydata.key == MLX_KEY_V)
+	else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
 	{
-		fractal->color_scheme = (fractal->color_scheme + 1) % 4;
-		render_fractal(fractal);
-		printf("Esquema alterado: %d (0=padrão, 1=psicodélico, 2=fogo, 3=oceano)\n",
-				fractal->color_scheme);
-	}
-	else if (keydata.key == MLX_KEY_UP)
-	{
-		fractal->offset_y -= 0.1 / fractal->zoom;
-		render_fractal(fractal);
-	}
-	else if (keydata.key == MLX_KEY_DOWN)
-	{
-		fractal->offset_y += 0.1 / fractal->zoom;
-		render_fractal(fractal);
-	}
-	else if (keydata.key == MLX_KEY_LEFT)
-	{
-		fractal->offset_x -= 0.1 / fractal->zoom;
-		render_fractal(fractal);
-	}
-	else if (keydata.key == MLX_KEY_RIGHT)
-	{
-		fractal->offset_x += 0.1 / fractal->zoom;
-		render_fractal(fractal);
-	}
-}
-
-void	scroll_hook(double xdelta, double ydelta, void *param)
-{
-	t_fractol	*fractal;
-	t_complex		mouse_complex;
-
-	(void)xdelta;
-	fractal = (t_fractol *)param;
-	if (ydelta != 0)
-	{
-		// Converte posição do mouse para coordenadas complexas ANTES do zoom
-		mouse_complex = pixel_to_complex(fractal->mouse_x, fractal->mouse_y, fractal);
-
-		// Aplica zoom
-		if (ydelta > 0) // Zoom in
-			fractal->zoom *= 1.1;
-		else if (ydelta < 0) // Zoom out
-			fractal->zoom /= 1.1;
-
-		// Recalcula offset para manter o ponto do mouse fixo
-		t_complex new_mouse_complex = pixel_to_complex(fractal->mouse_x, fractal->mouse_y, fractal);
-		fractal->offset_x += mouse_complex.real - new_mouse_complex.real;
-		fractal->offset_y += mouse_complex.imag - new_mouse_complex.imag;
+		adjust_julia_parameter(fractal, -0.01);
 		render_fractal(fractal);
 	}
 }
@@ -77,58 +87,4 @@ void	close_hook(void *param)
 	fractal = (t_fractol *)param;
 	mlx_close_window(fractal->mlx);
 	exit(0);
-}
-
-void mouse_hook(mouse_key_t button, action_t action, modifier_key_t mods, void *param)
-{
-	t_fractol *fractal = (t_fractol *)param;
-
-	(void)mods; // Não usado
-
-	if (button == MLX_MOUSE_BUTTON_LEFT)
-	{
-		if (action == MLX_PRESS)
-		{
-			// Inicia o drag
-			fractal->mouse_pressed = 1;
-			fractal->last_mouse_x = fractal->mouse_x;
-			fractal->last_mouse_y = fractal->mouse_y;
-		}
-		else if (action == MLX_RELEASE)
-		{
-			// Para o drag
-			fractal->mouse_pressed = 0;
-		}
-	}
-}
-
-// 🆕 NOVO: Hook para movimento do cursor (implementa o drag)
-void cursor_hook(double xpos, double ypos, void *param)
-{
-    t_fractol *fractal = (t_fractol *)param;
-
-    // Atualiza posição atual do mouse
-    fractal->mouse_x = (int)xpos;
-    fractal->mouse_y = (int)ypos;
-
-    // Se o mouse estiver pressionado, implementa o drag
-    if (fractal->mouse_pressed)
-    {
-        // Calcula diferença de movimento
-        int delta_x = fractal->mouse_x - fractal->last_mouse_x;
-        int delta_y = fractal->mouse_y - fractal->last_mouse_y;
-
-        // Converte movimento de pixels para movimento no plano complexo
-        // Movimento é proporcional ao nível de zoom (mais zoom = movimento mais preciso)
-        double move_factor = 4.0 / (fractal->width * fractal->zoom);
-        fractal->offset_x -= delta_x * move_factor;
-        fractal->offset_y -= delta_y * move_factor;
-
-        // Atualiza última posição
-        fractal->last_mouse_x = fractal->mouse_x;
-        fractal->last_mouse_y = fractal->mouse_y;
-
-        // Re-renderiza o fractal
-        render_fractal(fractal);
-    }
 }
